@@ -1,36 +1,49 @@
 import Vue from 'vue'
+import './plugins/vuetify'
 import App from './App.vue'
 import store from './store'
+import router from './router'
+import VueSailsIO from 'vue-sails.io'
+import VueResource from 'vue-resource'
 
-var socketIOClient = require('socket.io-client');
-var sailsIOClient = require('sails.io.js');
+Vue.use(VueResource);
+Vue.use(VueSailsIO, 'http://localhost:1337')
 
-// Instantiate the socket client (`io`)
-// (for now, you must explicitly pass in the socket.io client when using this library from Node.js)
-var io = sailsIOClient(socketIOClient);
-
-// Set some options:
-// (you have to specify the host and port of the Sails backend when using this library from Node.js)
-io.sails.url = 'http://localhost:1337';
-// ...
-
-// Send a GET request to `http://localhost:1337/hello`:
-io.socket.get('/room/subToAll', function serverResponded (body, JWR) {
-    // body === JWR.body
-    console.log('Sails responded with: ', body);
-    console.log('with headers: ', JWR.headers);
-    console.log('and with status code: ', JWR.statusCode);
-
-});
-
-io.socket.on('NEW_USER', function () {
-    console.log('New user !');
-});
-
-
+Vue.http.options.root = 'http://localhost:1337';
+console.log(Vue.http.options.root)
 Vue.config.productionTip = false
+
+Vue.http.interceptors.push((request, next) => {
+  /*if (request.url !== '/login') {
+    const xToken = window.localStorage.getItem('x-token')
+    request.headers.set('X-Token', xToken)
+  }*/
+
+  next(response => {
+    if ((response.status === 404) || (response.status === 504)) {
+      router.push({name: 'Home'})
+    }
+
+    if (response.status === 403) router.push({name: 'Access'})
+  })
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.userOnly)) {
+    const getCookie = name => {
+      const cookies = `; ${document.cookie}`.match(`;\\s*${name}=([^;]+)`)
+      return cookies ? cookies[1] : ''
+    }
+
+    if (getCookie('user')) {
+      next()
+    } else router.push({name: 'Access'})
+  } else next()
+})
+
 
 new Vue({
   store,
+  router,
   render: h => h(App)
 }).$mount('#app')
