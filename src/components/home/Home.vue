@@ -14,6 +14,11 @@
                 @click:clear="resetFiltering"
         ></v-text-field>
       </v-flex>
+      <v-flex xs12 v-if="loading">
+        <div class="text-xs-center">
+          <v-progress-circular :indeterminate="true"></v-progress-circular>
+        </div>
+      </v-flex>
       <v-flex xs12 style="margin-bottom: 50px"></v-flex>
       <v-flex xs 12 md6 offset-md3 v-if="rooms.length === 0">
         <v-alert
@@ -37,22 +42,26 @@
         </v-alert>
       </v-flex>
       <v-flex xs12 sm6 md3 v-for="room in filteredRooms" :key="room.id">
-        <div>
-          <v-card>
-            <v-card-title primary-title>
-              <v-badge color="grey">
-                <h3>{{room.name}}</h3>
-                <span slot="badge">{{room.id}}</span>
+        <v-card>
+          <v-card-title><h4>{{ room.name }} <span class="grey--text">(ID #{{room.id}})</span></h4></v-card-title>
+          <v-divider></v-divider>
+          <v-list dense v-if="room.players.length > 0">
+            <v-list-tile>
+              <v-list-tile-content class="font-weight-bold">Joueurs ({{room.players.length}}/6)</v-list-tile-content>
+              <v-list-tile-content class="align-end font-weight-bold">Score</v-list-tile-content>
+            </v-list-tile>
 
-              </v-badge>
-            </v-card-title>
-            <v-card-actions>
-              <v-btn flat color="" :to="{ name: 'Room', params: { id: room.id }}">
-                Rejoindre
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </div>
+            <v-list-tile v-for="player in room.players" :key="player.id">
+              <v-list-tile-content><span>{{player.username}} <span class="grey--text">(ID #{{player.id}})</span> :</span></v-list-tile-content>
+              <v-list-tile-content class="align-end">{{ player.score }}</v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+          <v-card-actions>
+            <v-btn v-if="room.players.length < 6" flat color="" :to="{ name: 'Room', params: { id: room.id }}">
+              Rejoindre
+            </v-btn>
+          </v-card-actions>
+        </v-card>
 
       </v-flex>
       <v-flex xs12 style="margin-top: 50px">
@@ -65,7 +74,8 @@
                       v-model="newRoomName"
                       label="Nom de la salle"
                       solo
-                      required
+                      counter
+                      maxlength="15"
               ></v-text-field>
             </v-flex>
             <v-flex xs12 sm3>

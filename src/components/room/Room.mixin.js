@@ -3,32 +3,59 @@ export default {
 
         this.roomId = this.$route.params.id;
 
-        var self = this;
+        let self = this;
         // Sub to the room
-        this.$sails.socket.get(`room-${this.roomId}`, function (data) {
-            console.log(data);
+        this.$sails.socket.get(`/room/${this.roomId}/sub`, function (data, r) {
+            if (r.statusCode === 404 || !data) {
+                self.$router.push({name: 'Home'});
+            }
+
+            if (!data.players) {
+                data.players = [];
+            }
+            self.room = data;
         });
 
-        this.$sails.socket.on('USER_CHANGE', function (msg) {
+        this.$sails.socket.on(`room`, function (msg) {
             console.log(msg);
+        });
+        this.$sails.socket.on(`NEW_PLAYER`, function (r) {
+            self.room.players.push(r);
+        });
+        this.$sails.socket.on(`UPDATED_ROOM`, function (r) {
+            self.room = r;
         });
     },
 
+    destroyed() {
+        if (this.hasChooseUsername) {
+            this.$sails.socket.delete(`/room/${this.roomId}/player/${this.player.id}`);
+        }
+    },
+
     data: () => ({
+        username: '',
+        hasChooseUsername: false,
         roomId: null,
-        room: {},
-        player: {},
-        players: []
+        room: {
+            name: '',
+            turn: 0,
+            players: []
+        },
+        player: {
+            username: ''
+        },
     }),
 
     methods: {
         hopIn() {
             var self = this;
-
-            this.$http.post('room', {
-                name: this.newRoomName
-            }).then((r) => {
-                self.$router.push({ name: 'Room', params: { id: r.data.id }});
+            self.$sails.socket.post(`/room/${this.roomId}/newPlayer`, {
+                username: self.username,
+                room: self.room.id
+            }, (r) => {
+                self.player = r;
+                self.hasChooseUsername = true;
             });
         }
     }

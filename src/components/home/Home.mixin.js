@@ -18,14 +18,29 @@ export default {
             }
             self.filteredRooms = self.rooms.filter((r) => r.name.toUpperCase().includes(self.search.toUpperCase()));
         });
+
+        this.$sails.socket.on('player', function (msg) {
+            if (msg.verb === 'created') {
+                self.rooms.find(r => r.id === msg.data.room.id).players.push(msg.data);
+            } else if (msg.verb === 'destroyed') {
+                self.rooms.find(r => r.id === msg.data.room.id).players = self.rooms.find(r => r.id === msg.data.room.id).players.filter((r) => r.id !== msg.id);
+            }
+            self.filteredRooms = self.rooms.filter((r) => r.name.toUpperCase().includes(self.search.toUpperCase()));
+        });
     },
+
+    destroyed() {
+        //this.$sails.socket.disconnect();
+    },
+
 
     data: () => ({
         rooms: [],
         filteredRooms: [],
         newRoomName: '',
         search: '',
-        loading: true
+        loading: true,
+        serverError: false
     }),
 
     methods: {
