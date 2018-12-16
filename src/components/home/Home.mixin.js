@@ -1,10 +1,9 @@
-const axios = require('axios');
 export default {
     created() {
 
         var self = this;
         // Sub to available rooms
-        this.$sails.socket.get('/room?status=CREATED', function (rooms) {
+        this.$sails.socket.get('/room', function (rooms) {
             self.rooms = rooms;
             self.filteredRooms = self.rooms;
             self.loading = false;
@@ -19,14 +18,14 @@ export default {
             self.filteredRooms = self.rooms.filter((r) => r.name.toUpperCase().includes(self.search.toUpperCase()));
         });
 
-        this.$sails.socket.on('player', function (msg) {
+        /*this.$sails.socket.on('player', function (msg) {
             if (msg.verb === 'created') {
                 self.rooms.find(r => r.id === msg.data.room.id).players.push(msg.data);
             } else if (msg.verb === 'destroyed') {
                 self.rooms.find(r => r.id === msg.data.room.id).players = self.rooms.find(r => r.id === msg.data.room.id).players.filter((r) => r.id !== msg.id);
             }
             self.filteredRooms = self.rooms.filter((r) => r.name.toUpperCase().includes(self.search.toUpperCase()));
-        });
+        });*/
     },
 
     destroyed() {
@@ -44,7 +43,7 @@ export default {
     }),
 
     methods: {
-        submit() {
+        createRoom() {
             var self = this;
 
             this.$http.post('room', {

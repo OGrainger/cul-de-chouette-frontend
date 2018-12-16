@@ -2,7 +2,7 @@
   <v-container grid-list-md text-xs-center>
     <v-layout row wrap>
       <v-flex xs12 sm6 offset-sm3>
-        <h2>Salles disponibles</h2>
+        <h2 style="padding-top: 12px;">Salles disponibles</h2>
       </v-flex>
       <v-flex xs12 sm3>
         <v-text-field
@@ -14,13 +14,13 @@
                 @click:clear="resetFiltering"
         ></v-text-field>
       </v-flex>
+      <v-flex xs12 style="margin-bottom: 50px"></v-flex>
       <v-flex xs12 v-if="loading">
         <div class="text-xs-center">
           <v-progress-circular :indeterminate="true"></v-progress-circular>
         </div>
       </v-flex>
-      <v-flex xs12 style="margin-bottom: 50px"></v-flex>
-      <v-flex xs 12 md6 offset-md3 v-if="rooms.length === 0">
+      <v-flex xs12 md6 offset-md3 v-if="rooms.length === 0 && !loading">
         <v-alert
                 :value="true"
                 color="info"
@@ -31,7 +31,7 @@
         </v-alert>
       </v-flex>
 
-      <v-flex xs 12 md6 offset-md3 v-if="filteredRooms.length === 0 && rooms.length > 0">
+      <v-flex xs12 md6 offset-md3 v-if="filteredRooms.length === 0 && rooms.length > 0 && !loading">
         <v-alert
                 :value="true"
                 color="info"
@@ -43,7 +43,7 @@
       </v-flex>
       <v-flex xs12 sm6 md3 v-for="room in filteredRooms" :key="room.id">
         <v-card>
-          <v-card-title><h4>{{ room.name }} <span class="grey--text">(ID #{{room.id}})</span></h4></v-card-title>
+          <v-card-title><h4>{{ room.name }} <span class="grey--text">(#{{room.id}})</span></h4></v-card-title>
           <v-divider></v-divider>
           <v-list dense v-if="room.players.length > 0">
             <v-list-tile>
@@ -52,39 +52,41 @@
             </v-list-tile>
 
             <v-list-tile v-for="player in room.players" :key="player.id">
-              <v-list-tile-content><span>{{player.username}} <span class="grey--text">(ID #{{player.id}})</span> :</span></v-list-tile-content>
+              <v-list-tile-content><span>{{player.username}} :</span></v-list-tile-content>
               <v-list-tile-content class="align-end">{{ player.score }}</v-list-tile-content>
             </v-list-tile>
           </v-list>
           <v-card-actions>
-            <v-btn v-if="room.players.length < 6" flat color="" :to="{ name: 'Room', params: { id: room.id }}">
-              Rejoindre
+            <v-btn flat :to="{ name: 'Room', params: { id: room.id }}">
+              {{(room.players.length < 6) ? 'Rejoindre' : 'Observer'}}
             </v-btn>
           </v-card-actions>
         </v-card>
 
       </v-flex>
       <v-flex xs12 style="margin-top: 50px">
-        <h2>Créer une salle</h2>
-
-        <v-form ref="form" lazy-validation>
-          <v-layout row wrap>
-            <v-flex xs12 sm9>
-              <v-text-field
-                      v-model="newRoomName"
-                      label="Nom de la salle"
-                      solo
-                      counter
-                      maxlength="15"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs12 sm3>
-              <v-btn @click="submit" :disabled="newRoomName === ''">
-                Créer
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-form>
+        <v-card>
+          <v-card-title>
+            <v-layout row wrap>
+              <v-flex xs12>
+                <h2>Créer une salle</h2>
+              </v-flex>
+              <v-flex xs12 sm10>
+                <v-text-field
+                        v-model="newRoomName"
+                        label="Nom de la salle"
+                        counter
+                        maxlength="25"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm2>
+                <v-btn flat @click="createRoom" :disabled="newRoomName === ''">
+                  Créer
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-card-title>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>

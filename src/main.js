@@ -5,9 +5,16 @@ import store from './store'
 import router from './router'
 import VueSailsIO from 'vue-sails.io'
 import VueResource from 'vue-resource'
+import Dice from 'vue-dice-component'
+import Notifications from 'vue-notification'
+
+import './../node_modules/vue-dice-component/lib/dice.css'
 
 Vue.use(VueResource);
-Vue.use(VueSailsIO, 'http://localhost:1337')
+Vue.use(VueSailsIO, 'http://localhost:1337');
+Vue.use(Dice);
+Vue.use(Notifications)
+
 
 Vue.http.options.root = 'http://localhost:1337';
 console.log(Vue.http.options.root)
