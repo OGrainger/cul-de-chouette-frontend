@@ -22,9 +22,6 @@ export default {
 
         });
 
-        this.$sails.socket.on(`room`, function (msg) {
-            console.log(msg);
-        });
         this.$sails.socket.on(`NEW_PLAYER`, function (r) {
             self.room.players.push(r);
         });
@@ -55,7 +52,6 @@ export default {
                 self.room.players.find(p => p.id === r.payload.newPlayersTurn.id).isPlayersTurn = true;
                 if (r.payload.newPlayersTurn.order === 1) {
                     self.room.turnCount = Number(self.room.turnCount) + 1;
-                    console.log(self.room.turnCount);
                 }
             }
         });
