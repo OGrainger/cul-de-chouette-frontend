@@ -21,36 +21,36 @@ console.log(Vue.http.options.root)
 Vue.config.productionTip = false
 
 Vue.http.interceptors.push((request, next) => {
-  /*if (request.url !== '/login') {
-    const xToken = window.localStorage.getItem('x-token')
-    request.headers.set('X-Token', xToken)
-  }*/
+    /*if (request.url !== '/login') {
+      const xToken = window.localStorage.getItem('x-token')
+      request.headers.set('X-Token', xToken)
+    }*/
 
-  next(response => {
-    if ((response.status === 404) || (response.status === 504)) {
-      router.push({name: 'Home'})
-    }
+    next(response => {
+        if ((response.status === 404) || (response.status === 504)) {
+            router.push({name: 'Home'})
+        }
 
-    if (response.status === 403) router.push({name: 'Access'})
-  })
+        if (response.status === 403) router.push({name: 'Access'})
+    })
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.userOnly)) {
-    const getCookie = name => {
-      const cookies = `; ${document.cookie}`.match(`;\\s*${name}=([^;]+)`)
-      return cookies ? cookies[1] : ''
-    }
+    if (to.matched.some(record => record.meta.userOnly)) {
+        const getCookie = name => {
+            const cookies = `; ${document.cookie}`.match(`;\\s*${name}=([^;]+)`)
+            return cookies ? cookies[1] : ''
+        }
 
-    if (getCookie('user')) {
-      next()
-    } else router.push({name: 'Access'})
-  } else next()
+        if (getCookie('user')) {
+            next()
+        } else router.push({name: 'Access'})
+    } else next()
 })
 
 
 new Vue({
-  store,
-  router,
-  render: h => h(App)
+    store,
+    router,
+    render: h => h(App)
 }).$mount('#app')

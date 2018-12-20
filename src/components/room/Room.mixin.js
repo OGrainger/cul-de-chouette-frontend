@@ -37,7 +37,7 @@ export default {
 
         this.$sails.socket.on(`PLAYER_WON`, function (r) {
             self.$notify({
-                text: `${r.username} gagne la partie !`
+                text: `${r.player.username} gagne la partie !`
             });
             self.$router.push({name: 'Home'});
         });

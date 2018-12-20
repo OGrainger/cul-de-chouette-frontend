@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-toolbar app>
+    <v-toolbar app class="primary">
         <v-toolbar-title class="headline text-uppercase">
           <router-link :to="{ name: 'Home' }">
 
@@ -9,15 +9,15 @@
           </router-link>
         </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn flat>DEMO (Score max : 50)</v-btn>
+      </v-toolbar-items>
     </v-toolbar>
 
-    <v-content>
-      <notifications position="top center"></notifications>
+    <v-content><notifications position="top center"></notifications>
       <router-view></router-view>
     </v-content>
-    <v-footer
-            height="auto"
-    >
+    <v-footer height="auto">
       <v-layout
               justify-center
               row
