@@ -100,7 +100,7 @@ export default {
         },
 
         throwCul() {
-            var self = this;
+            let self = this;
             self.$sails.socket.post(`/room/${this.roomId}/player/${this.me.id}/action`, {
                 action: 'THROW_CUL'
             }, (r) => {
