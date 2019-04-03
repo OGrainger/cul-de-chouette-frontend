@@ -11,12 +11,12 @@ import Notifications from 'vue-notification'
 import './../node_modules/vue-dice-component/lib/dice.css'
 
 Vue.use(VueResource);
-Vue.use(VueSailsIO, 'http://localhost:1337');
+Vue.use(VueSailsIO, 'https://cul-de-chouette-dev.herokuapp.com/');
 Vue.use(Dice);
 Vue.use(Notifications)
 
 
-Vue.http.options.root = 'http://localhost:1337';
+Vue.http.options.root = 'https://cul-de-chouette-dev.herokuapp.com/';
 console.log(Vue.http.options.root)
 Vue.config.productionTip = false
 
